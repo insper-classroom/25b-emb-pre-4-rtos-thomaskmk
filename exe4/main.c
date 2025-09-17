@@ -12,7 +12,7 @@ const int BTN_PIN_G = 26;
 const int LED_PIN_R = 4;
 const int LED_PIN_G = 6;
 
-QueueHandle_t xQueueButId;
+QueueHandle_t xQueue1;
 SemaphoreHandle_t xSemaphore_r;
 
 void btn_callback(uint gpio, uint32_t events) {
@@ -28,7 +28,7 @@ void led_1_task(void *p) {
     int delay = 0;
 
     while (true) {
-        if (xQueueReceive(xQueueButId, &delay, 0)) {
+        if (xQueueReceive(xQueue1, &delay, 0)) {
             printf("%d\n", delay);
         }
 
@@ -57,7 +57,7 @@ void btn_1_task(void *p) {
                 delay = 100;
             }
             printf("delay btn %d \n", delay);
-            xQueueSend(xQueueButId, &delay, 0);
+            xQueueSend(xQueue1, &delay, 0);
         }
     }
 }
@@ -66,7 +66,7 @@ int main() {
     stdio_init_all();
     printf("Start RTOS \n");
 
-    xQueueButId = xQueueCreate(32, sizeof(int));
+    xQueue1 = xQueueCreate(32, sizeof(int));
     xSemaphore_r = xSemaphoreCreateBinary();
 
     xTaskCreate(led_1_task, "LED_Task 1", 256, NULL, 1, NULL);

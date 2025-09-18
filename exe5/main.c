@@ -86,17 +86,20 @@ void btn_task(void *p) {
     gpio_set_irq_enabled_with_callback(BTN_PIN_R, GPIO_IRQ_EDGE_FALL, true, &btn_callback);
     gpio_set_irq_enabled(BTN_PIN_Y, GPIO_IRQ_EDGE_FALL, true);
 
-    int delay = 0;
+    int flag = 0;
+    int delay;
     while (true) {
         if (xSemaphoreTake(xSemaphoreLedR, pdMS_TO_TICKS(500)) == pdTRUE) {
-            delay = !delay;
-            delay *= 100;
+            flag = !flag;
+            delay = flag ? 100 : 0;
             xQueueSend(xQueue_r, &delay, 0);
         } 
 
+        flag = 0;
+
         if (xSemaphoreTake(xSemaphoreLedY, pdMS_TO_TICKS(500)) == pdTRUE) {
-            delay = !delay;
-            delay *= 100;
+            flag = !flag;
+            delay = flag ? 100 : 0;
             xQueueSend(xQueue_y, &delay, 0);
         }
     }
